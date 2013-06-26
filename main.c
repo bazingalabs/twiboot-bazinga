@@ -73,7 +73,7 @@
 #define LED_GN_TOGGLE()		PORTB ^= (1<<PORTB5)
 #define LED_OFF()		PORTB = 0x00
 
-#define TWI_ADDRESS		0x29
+uint8_t TWI_ADDRESS =	0x4;
 
 /* SLA+R */
 #define CMD_WAIT		0x00
@@ -425,6 +425,23 @@ int main(void)
 	TCCR0B = (1<<CS02) | (1<<CS00);
 	TIMSK0 = (1<<TOIE0);
 #endif
+
+	DDRB &= ~((1 << PB6) | (1 << PB7));
+	switch(PINB & ((1 << PB6) | (1 << PB7))) {
+		case ((0 << PB6) | (0 << PB7)): // Both pins off
+			TWI_ADDRESS = 4;
+		break;
+		case ((1 << PB6) | (0 << PB7)): // Both pins off
+			TWI_ADDRESS = 5;
+		break;
+		case ((0 << PB6) | (1 << PB7)): // Both pins off
+			TWI_ADDRESS = 6;
+		break;
+		case ((1 << PB6) | (1 << PB7)): // Both pins off
+			TWI_ADDRESS = 7;
+		break;
+	}
+	
 
 	/* TWI init: set address, auto ACKs with interrupts */
 	TWAR = (TWI_ADDRESS<<1);
